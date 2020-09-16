@@ -7,10 +7,10 @@ public class Utils {
 	static String mp3Stoarge = "";
 	
 	public static String processHangul(String msg) {
-		return msg.replaceAll("¤·¤¸", "ÀÎÁ¤").replaceAll("¤»{3,}","¤»¤»¤»").replaceAll("¤µ¤¡", "¼ö°í")
-				.replaceAll("¤©¤·", "·¹¾Ë").replaceAll("¤»¤»¤©¤³¤³", "Å©Å©·ç»æ»Í").replaceAll("¤¡¤§", "±â´Ş")
-				.replaceAll("¤§¤§", "´ú´ú").replaceAll("¤·¤¤", "¾Æ³ö").replaceAll("¤µ¤²","½Ã¹Ù")
-				.replaceAll("(¤©¤¡¤¤|¤ª¤¤)", "·¹°Ô³ë").replaceAll("¤·¤»","¿ÀÅ°").replaceAll("¤¡¤º","±¦Âù").replaceAll("¤±¤©", "¸ô¶ó");
+		return msg.replaceAll("ã…‡ã…ˆ", "ì¸ì •").replaceAll("ã…‹{3,}","ã…‹ã…‹ã…‹").replaceAll("ã……ã„±", "ìˆ˜ê³ ")
+				.replaceAll("ã„¹ã…‡", "ë ˆì•Œ").replaceAll("ã…‹ã…‹ã„¹ã…ƒã…ƒ", "í¬í¬ë£¨ì‚¥ë½•").replaceAll("ã„±ã„·", "ê¸°ë‹¬")
+				.replaceAll("ã„·ã„·", "ëœëœ").replaceAll("ã…‡ã„´", "ì•„ë†”").replaceAll("ã……ã…‚","ì‹œë°”")
+				.replaceAll("(ã„¹ã„±ã„´|ã„ºã„´)", "ë ˆê²Œë…¸").replaceAll("ã…‡ã…‹","ì˜¤í‚¤").replaceAll("ã„±ã…Š","ê´œì°¬").replaceAll("ã…ã„¹", "ëª°ë¼");
 	}
 	
 }
