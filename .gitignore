@@ -2,3 +2,11 @@
 .classpath
 .project
 .classpath
+*.class
+*.properties
+*.json
+*.prefs
+target/classes/META-INF/MANIFEST.MF
+target/classes/META-INF/maven/DiscordBot/DiscordBot/pom.xml
+/.metadata/
+.classpath
