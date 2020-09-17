@@ -5,6 +5,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.concurrent.TimeUnit;
 
+import com.sedmelluq.discord.lavaplayer.player.AudioPlayer;
+
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.Member;
@@ -186,6 +188,22 @@ public class Listener extends ListenerAdapter {
 					try{handlerMap.get(guild).t.play(f);}catch(Exception e) {e.printStackTrace(); System.out.println("Play Error encountered.");}
 				});
 			}catch(Exception e) {e.printStackTrace();}
+		}else if(msg.getContentRaw().contains("!스킵")) {
+			if(event.getMember().hasPermission(Permission.VOICE_MUTE_OTHERS)) {
+				AudioPlayer ap = handlerMap.get(guild).t.audioPlayer;
+				try {
+					ap.stopTrack();
+					handlerMap.get(guild).t.autoPlayCallback();
+					channel.sendMessage("스킵 완료!").queue(message -> message.delete().queueAfter(10, TimeUnit.SECONDS));
+				}catch(Exception e) {
+					e.printStackTrace();
+				}
+				
+			}else {
+				channel.sendMessage("뮤트 권한이 있는 사람만 스킵이 가능합니다!").queue(message ->{
+					message.delete().queueAfter(10, TimeUnit.SECONDS);
+				});
+			}
 		}
 		else if(!msg.getContentRaw().startsWith("!") && !msg.getContentRaw().contains("https://") && !msg.getContentRaw().contains("http://")){
 			if(handlerMap.containsKey(event.getGuild())) {
