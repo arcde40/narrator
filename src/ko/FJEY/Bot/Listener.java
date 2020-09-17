@@ -52,7 +52,8 @@ public class Listener extends ListenerAdapter {
 		if(user.isBot()) return;
 		if(getSetting(user).CURRENT_STEP > 0) {
 			String arg;
-			getSetting(user).pendingMessage.delete().queue();
+			Message m;
+			if((m = getSetting(user).pendingMessage) != null) m.delete().queue();
 			switch(getSetting(user).CURRENT_STEP) {
 			case 1:
 				arg = msg.getContentRaw();
@@ -179,10 +180,10 @@ public class Listener extends ListenerAdapter {
 				
 				msg.delete().queue(a -> {
 					File f = new File(Utils.mp3Stoarge+dest+".mp3");
-					handlerMap.get(guild).t.play(f);
 					channel.sendMessage(dest + ".mp3를 대기열에 추가했습니다.").queue(message->{
 						message.delete().queueAfter(10, TimeUnit.SECONDS);
 					});
+					try{handlerMap.get(guild).t.play(f);}catch(Exception e) {e.printStackTrace(); System.out.println("Play Error encountered.");}
 				});
 			}catch(Exception e) {e.printStackTrace();}
 		}

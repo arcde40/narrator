@@ -39,8 +39,7 @@ public class TTSServiceConnector extends AudioEventAdapter implements AudioEvent
 	
 	DefaultAudioPlayerManager playerManager;
 	AudioPlayer audioPlayer;
-	LinkedList<AudioTrack> queue = new LinkedList<>();
-	LinkedList<File> f_queue = new LinkedList<>();
+	LinkedList<AudioFile> queue = new LinkedList<>();
 	TTSServiceConnector audioListener;
 	boolean hasNext = false;
 	
@@ -61,19 +60,18 @@ public class TTSServiceConnector extends AudioEventAdapter implements AudioEvent
 		play(t);
 	}
 	
-	public void queue(AudioTrack track) {
+	public void queue(AudioFile track) {
 		queue.add(track);
 	}
 
-	public void play(File track) {
-		
-		f_queue.add(track);
-		playerManager.loadItem(track.getAbsolutePath(), new AudioLoadResultHandler() {
+	public void play(File f) {
+		playerManager.loadItem(f.getAbsolutePath(), new AudioLoadResultHandler() {
 				@Override
 				public void trackLoaded(AudioTrack track) {
-					audioListener.queue(track);
+					
+					audioListener.queue(new AudioFile(f, track));
 					if(audioPlayer.getPlayingTrack() == null) {
-						audioPlayer.playTrack(queue.pop());
+						audioPlayer.playTrack(queue.pop().getAudioTrack());
 					}
 					hasNext = true;
 					System.gc();
@@ -143,9 +141,11 @@ public class TTSServiceConnector extends AudioEventAdapter implements AudioEvent
 	
 	public void autoPlayCallback() {
 		System.out.println("Track Ended.");
-	    File t = f_queue.pop();
-	    if(t.getParent().contains("tts") && !t.delete()) System.out.println(t.getName()+" - Failed to delete");
-	    if(!queue.isEmpty()) {audioPlayer.playTrack(queue.pop()); hasNext = true;}
+	    if(!queue.isEmpty()) {
+	    	AudioFile af = queue.pop();
+	    	if(af.getFile().getParent().contains("tts") && !af.getFile().delete()) System.out.println(af.getFile().getName() + "- Failed to delete");
+	    	audioPlayer.playTrack(queue.peek().getAudioTrack());
+	    }
 	}
 	
 }
@@ -172,5 +172,23 @@ class PersonalSetting{
 		case 2: VOICE_ID = "ko-KR-Standard-C"; break;
 		case 3: VOICE_ID = "ko-KR-Standard-D"; break;
 		}
+	}
+}
+
+class AudioFile{
+	File f;
+	AudioTrack t;
+
+	public AudioFile(File f, AudioTrack t) {
+		this.f = f;
+		this.t = t;
+	}
+	
+	public File getFile() {
+		return f;
+	}
+	
+	public AudioTrack getAudioTrack() {
+		return t;
 	}
 }
