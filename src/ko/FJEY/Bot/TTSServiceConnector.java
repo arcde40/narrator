@@ -68,10 +68,9 @@ public class TTSServiceConnector extends AudioEventAdapter implements AudioEvent
 		playerManager.loadItem(f.getAbsolutePath(), new AudioLoadResultHandler() {
 				@Override
 				public void trackLoaded(AudioTrack track) {
-					
 					audioListener.queue(new AudioFile(f, track));
 					if(audioPlayer.getPlayingTrack() == null) {
-						audioPlayer.playTrack(queue.pop().getAudioTrack());
+						audioPlayer.playTrack(queue.peek().getAudioTrack());
 					}
 					hasNext = true;
 					System.gc();
@@ -140,11 +139,11 @@ public class TTSServiceConnector extends AudioEventAdapter implements AudioEvent
 	}
 	
 	public void autoPlayCallback() {
-		System.out.println("Track Ended.");
 	    if(!queue.isEmpty()) {
+			System.out.println("Track Ended.");
 	    	AudioFile af = queue.pop();
 	    	if(af.getFile().getParent().contains("tts") && !af.getFile().delete()) System.out.println(af.getFile().getName() + "- Failed to delete");
-	    	audioPlayer.playTrack(queue.peek().getAudioTrack());
+	    	if(!queue.isEmpty()) audioPlayer.playTrack(queue.peek().getAudioTrack());
 	    }
 	}
 	
@@ -190,5 +189,5 @@ class AudioFile{
 	
 	public AudioTrack getAudioTrack() {
 		return t;
-	}
+	}	
 }

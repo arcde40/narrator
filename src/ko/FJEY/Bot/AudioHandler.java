@@ -9,6 +9,7 @@ import com.sedmelluq.discord.lavaplayer.track.playback.AudioFrame;
 public class AudioHandler implements AudioSendHandler{
 	
 	TTSServiceConnector t;
+	boolean isPlaying = false;
 	AudioFrame lastFrame;
 
 	public AudioHandler(TTSServiceConnector t) {
@@ -18,10 +19,7 @@ public class AudioHandler implements AudioSendHandler{
 	@Override
 	public boolean canProvide() {
 		lastFrame = t.audioPlayer.provide();
-		if(lastFrame == null && t.hasNext) {
-			t.hasNext = false;	
-			t.autoPlayCallback();
-		}
+		if(lastFrame == null) t.autoPlayCallback();
 		return lastFrame != null;
 	}
 
