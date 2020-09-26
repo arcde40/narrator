@@ -225,7 +225,7 @@ public class Listener extends ListenerAdapter {
 				if(member.contains(user.getId())) {
 					if(Main.overloaded) {
 						channel.sendMessage("글자수 상한을 초과했습니다! 내래이터 개발자는 돈이 필요해요 T.T").queue(message -> {
-							message.delete().queue();
+							message.delete().queueAfter(10, TimeUnit.SECONDS);
 						});
 						return;
 					}
