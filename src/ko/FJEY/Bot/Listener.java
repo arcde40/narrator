@@ -223,6 +223,12 @@ public class Listener extends ListenerAdapter {
 		else if(!msg.getContentRaw().startsWith("!") && !msg.getContentRaw().contains("https://") && !msg.getContentRaw().contains("http://")){
 			if(handlerMap.containsKey(event.getGuild())) {
 				if(member.contains(user.getId())) {
+					if(Main.overloaded) {
+						channel.sendMessage("글자수 상한을 초과했습니다! 내래이터 개발자는 돈이 필요해요 T.T").queue(message -> {
+							message.delete().queue();
+						});
+						return;
+					}
 					if(msg.getContentRaw().matches("(.|\\n)*([\\u3000-\\u303f\\u3040-\\u309f\\u30a0-\\u30ff\\uff00-\\uffef\\u4e00-\\u9faf])+(.|\\n)*")) {
 						handlerMap.get(guild).t.speech(msg.getContentDisplay(), "", "ja-JP", getSetting(user).PITCH, getSetting(user).SPEED);
 					}

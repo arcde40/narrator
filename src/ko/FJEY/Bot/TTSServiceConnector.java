@@ -118,6 +118,8 @@ public class TTSServiceConnector extends AudioEventAdapter implements AudioEvent
             try (OutputStream out = new FileOutputStream(f)) {
                 out.write(audioContents.toByteArray());
                 System.out.println("Audio content written to file " + f.getName());
+                if(Main.addQuota(s.length()) > Main.maxQuota) Main.overloaded = true;
+               
                 return f;
             }
         } catch (Exception e) {

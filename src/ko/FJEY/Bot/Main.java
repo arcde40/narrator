@@ -10,11 +10,15 @@ import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.JDABuilder;
 import net.dv8tion.jda.api.OnlineStatus;
 import net.dv8tion.jda.api.entities.Activity;
+import net.dv8tion.jda.api.hooks.ListenerAdapter;
 
 public class Main {
 	
 	static EmbedBuilder settingMain = new EmbedBuilder();
-	
+	static int quota = 0;
+	static int maxQuota;
+	static boolean overloaded = false;
+	static ListenerAdapter l;
 	public static void main(String args[]) throws LoginException {
 		settingMain.setTitle("설정");
 		settingMain.setColor(Color.RED);
@@ -33,8 +37,15 @@ public class Main {
 		builder.setAutoReconnect(true);
 		builder.setStatus(OnlineStatus.ONLINE);
 		builder.setActivity(Activity.playing("!내래이터"));
-		builder.addEventListeners(new Listener());
+		builder.addEventListeners(l=new Listener());
+		
+		maxQuota = args.length > 4 ? Integer.parseInt(args[4]) : 100000;
 		
 		JDA jda = builder.build();
+	}
+	
+	public static int addQuota(int count) {
+		System.out.printf("Quota - %d/%d\n", quota+=count, maxQuota);
+		return quota;
 	}
 }
