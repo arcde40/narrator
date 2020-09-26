@@ -155,6 +155,7 @@ class PersonalSetting{
 	String VOICE_ID;
 	double PITCH, SPEED;
 	Message pendingMessage;
+	boolean deleteOnSpoken;
 	
 	public PersonalSetting(Message m) {
 		this.pendingMessage = m;
@@ -162,6 +163,7 @@ class PersonalSetting{
 		VOICE_ID = "ko-KR-Standard-A";
 		PITCH = 1.0;
 		SPEED = 1.0;
+		deleteOnSpoken = false;
 	}
 	
 	public void updateVoiceID(int i) {

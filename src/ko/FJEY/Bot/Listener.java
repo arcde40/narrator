@@ -16,6 +16,7 @@ import net.dv8tion.jda.api.entities.User;
 import net.dv8tion.jda.api.entities.VoiceChannel;
 import net.dv8tion.jda.api.events.guild.voice.GuildVoiceJoinEvent;
 import net.dv8tion.jda.api.events.guild.voice.GuildVoiceLeaveEvent;
+import net.dv8tion.jda.api.events.guild.voice.GuildVoiceSuppressEvent;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
 import net.dv8tion.jda.api.events.message.guild.react.GuildMessageReactionAddEvent;
@@ -141,6 +142,10 @@ public class Listener extends ListenerAdapter {
 					try {
 					p.PITCH = Double.parseDouble(args[2]);
 					p.SPEED = Double.parseDouble(args[3]);
+					if(p.PITCH > 20) p.PITCH = 20;
+					if(p.PITCH < -20) p.PITCH = -20;
+					if(p.SPEED > 4) p.SPEED = 4;
+					if(p.SPEED < 0.25) p.SPEED = 0.25;
 					channel.sendMessage("변경 완료!").queue(message -> {
 						message.delete().queueAfter(10, TimeUnit.SECONDS);
 					});
@@ -176,6 +181,16 @@ public class Listener extends ListenerAdapter {
 					message.delete().queueAfter(10, TimeUnit.SECONDS);
 				});
 			}else return;
+		}else if(msg.getContentRaw().contains("!시크릿모드")) {
+			if(getSetting(user).deleteOnSpoken ^= true) {
+				channel.sendMessage("발음 후 채팅 자동 삭제 기능을 활성화했습니다.").queue(message->{
+					message.delete().queueAfter(10, TimeUnit.SECONDS);
+				});
+			}else {
+				channel.sendMessage("발음 후 채팅 자동 삭제 기능을 비활성화했습니다.").queue(message->{
+					message.delete().queueAfter(10, TimeUnit.SECONDS);
+				});
+			}
 		}else if(msg.getContentRaw().contains("!재생")){
 			String dest = msg.getContentRaw().substring(4);
 			try {
@@ -212,6 +227,7 @@ public class Listener extends ListenerAdapter {
 						handlerMap.get(guild).t.speech(msg.getContentDisplay(), "", "ja-JP", getSetting(user).PITCH, getSetting(user).SPEED);
 					}
 					else handlerMap.get(guild).t.speech(Utils.processHangul(msg.getContentDisplay()), getSetting(user).VOICE_ID, "ko-KR", getSetting(user).PITCH, getSetting(user).SPEED);
+					if(getSetting(user).deleteOnSpoken) msg.delete().queue();
 				}
 			}
 		}
