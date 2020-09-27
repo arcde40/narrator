@@ -247,7 +247,14 @@ public class Listener extends ListenerAdapter {
 	@Override
 	public void onGuildVoiceLeave(GuildVoiceLeaveEvent event) {
 		Member m = event.getMember();
-		if(member.contains(m.getId())) member.remove(m.getId());
+		Guild guild = event.getGuild();
+		if(member.contains(m.getId())) {
+			member.remove(m.getId());
+			if(member.isEmpty()) {
+				guild.getAudioManager().closeAudioConnection();
+				handlerMap.remove(guild);
+			}
+		}
 		if(notifyUserInOut) handlerMap.get(event.getGuild()).t.speech(event.getMember().getNickname() + "님이 음성 채팅에서 퇴장하셨습니다.");
 
 	}
