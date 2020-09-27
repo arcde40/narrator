@@ -1,6 +1,16 @@
 package ko.FJEY.Bot;
 
 import java.awt.Color;
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileReader;
+import java.io.IOException;
+import java.io.PrintWriter;
+import java.util.InputMismatchException;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 
 import javax.security.auth.login.LoginException;
 
@@ -19,6 +29,9 @@ public class Main {
 	static int maxQuota;
 	static boolean overloaded = false;
 	static ListenerAdapter l;
+	static File q = new File(".quota");
+	static File log = new File("log.log");
+	static BufferedWriter bw;
 	public static void main(String args[]) throws LoginException {
 		settingMain.setTitle("¼³Á¤");
 		settingMain.setColor(Color.RED);
@@ -31,7 +44,22 @@ public class Main {
 		Utils.ttsVoiceStoarge = args[2];
 		Utils.mp3Stoarge = args[3];
 		
+		try {
+			if(!q.exists()) q.createNewFile();
+			BufferedReader bf = new BufferedReader(new FileReader(q));
+			quota = Integer.parseInt(bf.readLine());
+			bw = new BufferedWriter(new PrintWriter(q));
+		} catch (IOException e) {
+			e.printStackTrace();
+			return;
+		} catch (InputMismatchException e) {
+			e.printStackTrace();
+			return;
+		}
 		
+		ScheduledExecutorService exec = Executors.newScheduledThreadPool(1);
+		exec.scheduleAtFixedRate(new QuotaIOManager(bw, q), 0, 1, TimeUnit.MINUTES);
+	
 		JDABuilder builder = new JDABuilder(AccountType.BOT);
 		builder.setToken(args[0]);
 		builder.setAutoReconnect(true);
@@ -47,5 +75,26 @@ public class Main {
 	public static int addQuota(int count) {
 		System.out.printf("Quota - %d/%d\n", quota+=count, maxQuota);
 		return quota;
+	}
+}
+
+class QuotaIOManager implements Runnable{
+
+	BufferedWriter bw;
+	File q;
+	
+	public QuotaIOManager(BufferedWriter bw, File q) {
+		this.bw = bw;
+		this.q = q;
+	}
+	
+	@Override
+	public void run() {
+		try {
+			bw.write(Main.quota);
+			System.out.println("Quota Saved.");
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
 	}
 }
