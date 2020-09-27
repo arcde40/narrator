@@ -52,6 +52,7 @@ public class TTSServiceConnector extends AudioEventAdapter implements AudioEvent
 	}
 	
 	public void speech(String s, String voice_id, String lang, double pitch, double speed) {
+		if(s.isBlank()) return;
 		File t = getSpeech(s, voice_id, lang, speed, pitch);
 		if(t == null) {
 			System.out.println("Error - getSpeech() returned a null file.");
