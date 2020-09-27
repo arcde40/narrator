@@ -91,7 +91,8 @@ class QuotaIOManager implements Runnable{
 	@Override
 	public void run() {
 		try {
-			bw.write(Main.quota);
+			bw.write(String.valueOf(Main.quota));
+			bw.flush();
 			System.out.println("Quota Saved.");
 		} catch (IOException e) {
 			e.printStackTrace();
