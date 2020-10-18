@@ -25,11 +25,13 @@ import net.dv8tion.jda.api.hooks.ListenerAdapter;
 public class Main {
 	
 	static EmbedBuilder settingMain = new EmbedBuilder();
+	static final String fnameQuota = ".quota";
 	static int quota = 0;
 	static int maxQuota;
+	static int prevQuota = 0;
 	static boolean overloaded = false;
 	static ListenerAdapter l;
-	static File q = new File(".quota");
+	static File q = new File(fnameQuota);
 	static File log = new File("log.log");
 	static BufferedWriter bw;
 	public static void main(String args[]) throws LoginException {
@@ -43,22 +45,11 @@ public class Main {
 		Utils.credentialLocation = args[1];
 		Utils.ttsVoiceStoarge = args[2];
 		Utils.mp3Stoarge = args[3];
-		
-		try {
-			if(!q.exists()) q.createNewFile();
-			BufferedReader bf = new BufferedReader(new FileReader(q));
-			quota = Integer.parseInt(bf.readLine());
-			bw = new BufferedWriter(new PrintWriter(q));
-		} catch (IOException e) {
-			e.printStackTrace();
-			return;
-		} catch (InputMismatchException e) {
-			e.printStackTrace();
-			return;
-		}
-		
+
 		ScheduledExecutorService exec = Executors.newScheduledThreadPool(1);
-		exec.scheduleAtFixedRate(new QuotaIOManager(bw, q), 0, 1, TimeUnit.MINUTES);
+		exec.scheduleAtFixedRate(new QuotaIOManager(), 1, 1, TimeUnit.MINUTES);
+		
+		SignatureVoice.ready();
 	
 		JDABuilder builder = new JDABuilder(AccountType.BOT);
 		builder.setToken(args[0]);
@@ -79,22 +70,34 @@ public class Main {
 }
 
 class QuotaIOManager implements Runnable{
-
-	BufferedWriter bw;
-	File q;
-	
-	public QuotaIOManager(BufferedWriter bw, File q) {
-		this.bw = bw;
-		this.q = q;
-	}
 	
 	@Override
 	public void run() {
 		try {
+			File f = new File(Main.fnameQuota);
+			int t;
+			if(f.exists()) {
+				BufferedReader br = new BufferedReader(new FileReader(f));
+				try {
+				t = Integer.parseInt(br.readLine());
+				}catch(InputMismatchException e) {t = 0;}
+				if(t != Main.prevQuota) {
+					if(Main.prevQuota > 0) Main.quota -= Main.prevQuota - t;
+					System.out.println("Quota Changed; Did it happened manually? If not, it is bug.");
+					System.out.println("prevQuota = " + Main.prevQuota + " t = " + t);
+				}
+				f.delete();
+			}else {
+				t = 0;
+			}
+			f.createNewFile();
+			BufferedWriter bw = new BufferedWriter(new PrintWriter(f));
 			bw.write(String.valueOf(Main.quota));
 			bw.flush();
+			bw.close();
 			System.out.println("Quota Saved.");
-		} catch (IOException e) {
+			Main.prevQuota = Main.quota;
+		} catch (Exception e) {
 			e.printStackTrace();
 		}
 	}

@@ -7,6 +7,8 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.util.LinkedList;
+import java.util.List;
+
 import com.google.auth.oauth2.GoogleCredentials;
 import com.google.cloud.storage.Storage;
 import com.google.cloud.storage.StorageOptions;
@@ -49,6 +51,19 @@ public class TTSServiceConnector extends AudioEventAdapter implements AudioEvent
 	
 	public void speech(String s) {
 		speech(s, "ko-KR-Standard-A", "ko-KR", 0, 1.15);
+	}
+	
+	public void speechSignature(String s, PersonalSetting ps) {
+		LinkedList<SignatureString> l = SignatureVoice.getSignatureSound(s);
+		for(SignatureString ss : l) {
+			if(!ss.isSignatureString()) speech(ss.content, ps);
+			else play(new File(Utils.mp3Stoarge+ss.path));
+		}
+		
+	}
+	
+	public void speech(String s, PersonalSetting ps) {
+		speech(s, ps.VOICE_ID, "ko-KR", ps.PITCH, ps.SPEED);
 	}
 	
 	public void speech(String s, String voice_id, String lang, double pitch, double speed) {
@@ -158,7 +173,7 @@ class PersonalSetting{
 	String VOICE_ID;
 	double PITCH, SPEED;
 	Message pendingMessage;
-	boolean deleteOnSpoken;
+	boolean deleteOnSpoken, signatureSpeech;
 	
 	public PersonalSetting(Message m) {
 		this.pendingMessage = m;
@@ -167,6 +182,7 @@ class PersonalSetting{
 		PITCH = 1.0;
 		SPEED = 1.0;
 		deleteOnSpoken = false;
+		signatureSpeech = false;
 	}
 	
 	public void updateVoiceID(int i) {

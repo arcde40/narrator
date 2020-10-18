@@ -219,6 +219,16 @@ public class Listener extends ListenerAdapter {
 					message.delete().queueAfter(10, TimeUnit.SECONDS);
 				});
 			}
+		}else if(msg.getContentRaw().matches("!시그니(처|쳐).*")){
+			if(getSetting(user).signatureSpeech ^= true) {
+				channel.sendMessage("시그니처 보이스 기능을 활성화했습니다.").queue(message->{
+					message.delete().queueAfter(10, TimeUnit.SECONDS);
+				});
+			}else {
+				channel.sendMessage("시그니처 보이스 기능을 비활성화했습니다.").queue(message->{
+					message.delete().queueAfter(10, TimeUnit.SECONDS);
+				});
+			}
 		}
 		else if(!msg.getContentRaw().startsWith("!") && !msg.getContentRaw().contains("https://") && !msg.getContentRaw().contains("http://")){
 			if(handlerMap.containsKey(event.getGuild())) {
@@ -232,6 +242,7 @@ public class Listener extends ListenerAdapter {
 					if(msg.getContentRaw().matches("(.|\\n)*([\\u3000-\\u303f\\u3040-\\u309f\\u30a0-\\u30ff\\uff00-\\uffef\\u4e00-\\u9faf])+(.|\\n)*")) {
 						handlerMap.get(guild).t.speech(msg.getContentDisplay(), "", "ja-JP", getSetting(user).PITCH, getSetting(user).SPEED);
 					}
+					else if(getSetting(user).signatureSpeech) handlerMap.get(guild).t.speechSignature(Utils.processHangul(msg.getContentDisplay()), getSetting(user));
 					else handlerMap.get(guild).t.speech(Utils.processHangul(msg.getContentDisplay()), getSetting(user).VOICE_ID, "ko-KR", getSetting(user).PITCH, getSetting(user).SPEED);
 					if(getSetting(user).deleteOnSpoken) msg.delete().queue();
 				}

@@ -1,10 +1,14 @@
 package ko.FJEY.Bot;
 
+import java.util.HashMap;
+
 public class Utils {
 	
 	static String credentialLocation = "";
 	static String ttsVoiceStoarge = "";
 	static String mp3Stoarge = "";
+	
+	static HashMap<String, String> signatureMap = new HashMap<String, String>();
 	
 	public static String processHangul(String msg) {
 		return msg.replaceAll("ㅇㅈㄹ", "이지랄").replaceAll("ㅇㅈ", "인정").replaceAll("ㅋ{3,}","ㅋㅋㅋ").replaceAll("ㅅㄱ", "수고")
@@ -14,4 +18,7 @@ public class Utils {
 				.replaceAll("(\\(|\\)|;|'|±){3,}", "");
 	}
 	
+	
 }
+
+
